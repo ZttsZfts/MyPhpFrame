@@ -1,0 +1,24 @@
+<IfModule mod_mime.c>
+    AddEncoding gzip .gz
+    AddType application/wasm .wasm
+    AddType application/wasm .wasm.gz
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 如果请求的文件或目录不存在，将请求重定向到 index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    RewriteRule ^page/(.*)$ index.php?t=page&id=$1 [QSA,L]
+    RewriteRule ^api/(.*)$ index.php?t=api&id=$1 [QSA,L]
+
+    # 设置正确的 Content-Type
+    RewriteCond %{REQUEST_URI} \.wasm\.gz$
+    RewriteRule ^ - [T=application/wasm]
+
+    # 屏蔽 .pem 文件
+    RewriteRule \.pem$ - [F,L]
+</IfModule>
